@@ -1,0 +1,44 @@
+{
+    "art_piece_monalisa": {
+        "title": "Mona Lisa",
+        "artist": "Leonardo da Vinci",
+        "description": "One of the most famous portraits in the world, known for the subject's enigmatic expression.",
+        "image": "/images/monalisa.webp"
+    },
+    "art_piece_wheatfield": {
+        "title": "Wheat Field with Crows",
+        "artist": "Vincent van Gogh",
+        "description": "A haunting and dramatic painting of a wheat field under a stormy sky, possibly van Gogh's last work.",
+        "image": "/images/wheatfield.jpg"
+    },
+    "art_piece_thekiss": {
+        "title": "The Kiss",
+        "artist": "Gustav Klimt",
+        "description": "A symbol of love and intimacy, this golden artwork blends Art Nouveau and Symbolism.",
+        "image": "/images/thekiss.jpg"
+    },
+    "art_piece_starwars": {
+        "title": "Star Wars Poster",
+        "artist": "Unknown",
+        "description": "An iconic poster celebrating the legendary sci-fi saga that redefined cinema.",
+        "image": "/images/starwars.jpg"
+    },
+    "art_piece_pearlearring": {
+        "title": "Girl with a Pearl Earring",
+        "artist": "Johannes Vermeer",
+        "description": "Often called the 'Mona Lisa of the North', this painting captures a mysterious young woman wearing a pearl earring.",
+        "image": "/images/pearlearring.jpg"
+    },
+    "art_piece_starrynight": {
+        "title": "Starry Night",
+        "artist": "Vincent van Gogh",
+        "description": "A swirling night sky over a quiet town, painted during Van Gogh’s stay at a mental asylum in Saint-Rémy.",
+        "image": "/images/starrynight.jpg"
+    },
+    "art_piece_waveoffkanagawa": {
+        "title": "The Great Wave off Kanagawa",
+        "artist": "Hokusai",
+        "description": "A legendary woodblock print capturing a massive wave threatening boats near Mount Fuji.",
+        "image": "/images/waveoffkanagawa.jpg"
+    }
+}
