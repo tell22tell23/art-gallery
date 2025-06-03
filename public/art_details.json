@@ -11,14 +11,12 @@
         ]
     },
     "art_piece_wheatfield": {
-        "title": "Wheat Field with Crows",
+        "title": "Wheat Field with Cypresses",
         "artist": "Vincent van Gogh",
-        "date": "1890",
-        "description": "A haunting and dramatic painting of a wheat field under a stormy sky, possibly van Gogh's last work.",
+        "date": "1889",
+        "description": "A vibrant and swirling depiction of tall cypress trees, showcasing Van Gogh's unique brushwork and color palette.",
         "image": "/images/wheatfield.jpg",
-        "links": [
-            "https://en.wikipedia.org/wiki/Wheatfield_with_Crows"
-        ]
+        "links": [ "https://www.metmuseum.org/art/collection/search/436535" ]
     },
     "art_piece_thekiss": {
         "title": "The Kiss",
