@@ -207,10 +207,9 @@ export function addRoom(scene, camera, renderer) {
             },
             (progress) => {
                 if (progress.lengthComputable) {
-                    const percent = (progress.loaded / progress.total) * 100;
                     const loadingScreen = document.getElementById('loadingScreen');
                     if (loadingScreen) {
-                        loadingScreen.textContent = `Loading 3D Gallery... ${percent.toFixed(0)}%`;
+                        loadingScreen.textContent = `Loading 3D Gallery...`;
                     }
                 } else {
                     // fallback if length not computable
