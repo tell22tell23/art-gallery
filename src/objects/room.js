@@ -74,7 +74,8 @@ export function addRoom(scene, camera, renderer) {
 
         fetch('/art_details.json')
             .then(res => res.json())
-            .then(data => artDetails = data);
+            .then(data => artDetails = data)
+            .catch(err => console.error('Fetch error:', err));
 
         window.addEventListener('mousemove', (event) => {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -82,16 +83,26 @@ export function addRoom(scene, camera, renderer) {
         });
 
         window.addEventListener('keydown', (event) => {
-            console.log(event.code);
-            console.log('Hovered Art:', hoveredArt);
-            console.log('artDetails:', artDetails);
             if (event.code === 'KeyE' && hoveredArt && artDetails[hoveredArt]) {
-                console.log(event.code);
                 const art = artDetails[hoveredArt];
                 showArtDetailPopup(art);
                 document.exitPointerLock();
             }
 
+            if (event.code === 'Escape') {
+                closePopup();
+            }
+        });
+
+        window.addEventListener('mousedown', (event) => {
+            const popup = document.getElementById("artDetailPopup");
+            if (popup && popup.style.display === 'block') {
+                const popupContent = document.getElementById('popupContent') || popup;
+
+                if (!popupContent.contains(event.target)) {
+                    closePopup();
+                }
+            }
         });
 
         const showHoverPrompt = (visible) => {
@@ -101,14 +112,42 @@ export function addRoom(scene, camera, renderer) {
 
         const showArtDetailPopup = (art) => {
             document.getElementById("popupTitle").textContent = art.title;
+            document.getElementById("popupArtist").textContent = art.artist;
+            document.getElementById("popupDate").textContent = art.date;
             document.getElementById("popupImage").src = art.image;
             document.getElementById("popupDescription").textContent = art.description;
+
+            const linksList = document.getElementById("popupLinks");
+            linksList.innerHTML = ""; // Clear previous links if any
+
+            if (art.links && Array.isArray(art.links) && art.links.length > 0) {
+                art.links.forEach(link => {
+                    const li = document.createElement("li");
+                    const a = document.createElement("a");
+                    a.href = link;
+                    a.target = "_blank";
+                    a.rel = "noopener noreferrer";
+                    a.title = link;
+                    a.textContent = link;
+                    li.appendChild(a);
+                    linksList.appendChild(li);
+                });
+            }
+
             document.getElementById("artDetailPopup").style.display = 'block';
         };
+
+        function closePopup() {
+            const popup = document.getElementById("artDetailPopup");
+            if (popup) popup.style.display = 'none';
+            showHoverPrompt(false);
+            document.body.requestPointerLock();
+        }
 
         loader.load(
             '/3d-art-gallery.glb',
             (gltf) => {
+                document.getElementById('loadingScreen').style.display = 'none'; // Hide loading screen
                 const model = gltf.scene;
                 model.traverse((child) => {
                     if (child.isMesh) {
@@ -166,9 +205,27 @@ export function addRoom(scene, camera, renderer) {
 
                 resolve({ composer, updateHelpers, navigationController, detectArtHover });
             },
-            (progress) => console.log('Loading progress:', progress),
+            (progress) => {
+                if (progress.lengthComputable) {
+                    const percent = (progress.loaded / progress.total) * 100;
+                    const loadingScreen = document.getElementById('loadingScreen');
+                    if (loadingScreen) {
+                        loadingScreen.textContent = `Loading 3D Gallery... ${percent.toFixed(0)}%`;
+                    }
+                } else {
+                    // fallback if length not computable
+                    const loadingScreen = document.getElementById('loadingScreen');
+                    if (loadingScreen) {
+                        loadingScreen.textContent = `Loading 3D Gallery...`;
+                    }
+                }
+            },
             (error) => {
                 console.error('Error loading model:', error);
+                const loadingScreen = document.getElementById('loadingScreen');
+                if (loadingScreen) {
+                    loadingScreen.textContent = `Failed to load 3D Gallery.`;
+                }
                 reject(error);
             }
         );

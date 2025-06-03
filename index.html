@@ -16,11 +16,43 @@
             <!-- Art detail popup -->
             <div id="artDetailPopup" style="display: none;">
                 <div id="popupContent">
-                    <h2 id="popupTitle"></h2>
-                    <img id="popupImage" src="" alt="Art Image" />
-                    <p id="popupDescription"></p>
-                    <button onclick="document.getElementById('artDetailPopup').style.display='none'">Close</button>
+                    <div class="popupHeader">
+                        <div class="artTitle">
+                            <h2 id="popupTitle"></h2>
+                            <div class="artInfo">
+                                <p><span style="color: #535353">Author:</span> <span id="popupArtist"></span></p>
+                                <p><span style="color: #535353">Date:</span> <span id="popupDate"></span></p>
+                            </div>
+                        </div>
+                        <button class="popupCross" onclick="document.getElementById('artDetailPopup').style.display='none'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"><path fill="currentColor" d="M16.066 8.995a.75.75 0 1 0-1.06-1.061L12 10.939L8.995 7.934a.75.75 0 1 0-1.06 1.06L10.938 12l-3.005 3.005a.75.75 0 0 0 1.06 1.06L12 13.06l3.005 3.006a.75.75 0 0 0 1.06-1.06L13.062 12z"/></svg>
+                        </button>
+                    </div>
+                    <div class="popupBody">
+                        <img id="popupImage" src="" alt="Art Image" />
+                        <div className="popupText">
+                            <p id="popupDescription"></p>
+                            <ul id="popupLinks">
+                            </ul>
+                        </div>
+                    </div>
                 </div>
+            </div>
+
+
+            <!-- Loading screen -->
+            <div id="loadingScreen" style="
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: #111;
+                color: white;
+                font-size: 2rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+                ">
+                Loading 3D Gallery...
             </div>
         </div>
         <script type="module" src="/src/main.js"></script>

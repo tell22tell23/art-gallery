@@ -1,7 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap');
+
 body, html, #app {
     margin: 0;
     padding: 0;
     height: 100%;
+    font-family: 'Geist Mono', monospace;
 }
 
 #hoverPrompt {
@@ -31,13 +34,62 @@ body, html, #app {
     z-index: 1001;
 }
 
-#popupContent {
-    max-width: 500px;
-    text-align: center;
+#popupImage {
+    max-width: 420px;
+    height: auto;
 }
 
-#popupImage {
-    max-width: 100%;
-    height: auto;
-    margin: 10px 0;
+.popupHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 20px;
+}
+
+.popupCross {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.popupCross:hover {
+    color: red;
+}
+
+#popupTitle {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: 0;
+}
+
+.artTitle {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.artInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.artInfo p {
+    margin: 0;
+}
+
+.popupBody {
+    display: flex;
+    align-items: start;
+    gap: 20px;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #007bff;
+    text-decoration: underline;
 }

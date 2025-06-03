@@ -50,7 +50,6 @@ export class NavigationController {
                     this.floorObjects.push(child);
                 } else if (name.includes('wall') || name.includes('obstacle') || name.includes('flower')) {
                     this.collisionObjects.push(child);
-                    console.log(`Collision object found: ${child.name}`);
                 }
             }
         });
@@ -67,7 +66,9 @@ export class NavigationController {
             }
 
             if (event.code === 'Escape') {
-                document.exitPointerLock();
+                if (document.pointerLockElement === document.body) {
+                    document.exitPointerLock();
+                }
             }
         });
 
