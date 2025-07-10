@@ -77,6 +77,7 @@ export class NavigationController {
         });
 
         document.addEventListener('click', () => {
+            console.log(this.isPointerLocked);
             if (!this.isPointerLocked) {
                 document.body.requestPointerLock();
             }
@@ -139,6 +140,7 @@ export class NavigationController {
             const box = new THREE.Box3().setFromObject(obj);
 
             if (box.intersectsSphere(playerSphere)) {
+                console.log(`Collision detected with ${obj.name}`);
                 return true; // collision detected
             }
         }

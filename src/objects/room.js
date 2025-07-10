@@ -59,7 +59,7 @@ export function addRoom(scene, camera, renderer) {
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1);
         scene.add(ambientLight);
 
         const composer = new EffectComposer(renderer);
@@ -145,7 +145,8 @@ export function addRoom(scene, camera, renderer) {
         }
 
         loader.load(
-            '/3d-art-gallery.glb',
+            '/gal.glb',
+            // '3d-art-gallery.glb',
             (gltf) => {
                 document.getElementById('loadingScreen').style.display = 'none'; // Hide loading screen
                 const model = gltf.scene;
@@ -172,7 +173,17 @@ export function addRoom(scene, camera, renderer) {
 
                 scene.add(model);
                 const navigationController = new NavigationController(camera, scene);
-                navigationController.setPosition(0, 0, 5);
+                navigationController.setPosition(1, 0, 5);
+
+                if (gltf.scene.background) {
+                    scene.background = gltf.scene.background;
+                }
+
+                // Optional: Use environment map
+                const envMap = gltf.scene.environment;
+                if (envMap) {
+                    scene.environment = envMap;
+                }
 
                 const updateHelpers = () => {
                     scene.traverse((child) => {

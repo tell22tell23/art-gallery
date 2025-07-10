@@ -18,25 +18,28 @@ function init() {
 
             console.log('Room loaded successfully with navigation');
 
-            animate();
+            // Start animation loop AFTER everything is loaded
+            function animate() {
+                requestAnimationFrame(animate);
+
+                const deltaTime = clock.getDelta();
+
+                if (navigationController) {
+                    navigationController.update(deltaTime);
+                }
+
+                if (updateHelpers) { updateHelpers(); }
+                if (detectArtHover) { detectArtHover(); }
+
+                if (composer) { composer.render(); }
+                else { renderer.render(scene, camera); }
+            }
+
+            animate(); // Start the animation loop here
         })
         .catch((error) => {
             console.error('Failed to load room:', error);
         });
-
-    function animate() {
-        requestAnimationFrame(animate);
-
-        const deltaTime = clock.getDelta();
-
-        if (navigationController) { navigationController.update(deltaTime); }
-
-        if (updateHelpers) { updateHelpers(); }
-        if (detectArtHover) { detectArtHover(); }
-
-        if (composer) { composer.render(); }
-        else { renderer.render(scene, camera); }
-    }
 
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
@@ -47,7 +50,6 @@ function init() {
             composer.setSize(window.innerWidth, window.innerHeight);
         }
     });
-
 }
 
 init();
