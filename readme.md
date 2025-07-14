@@ -48,6 +48,7 @@ npm run dev
 │   ├── images
 │   │   ├── monalisa.webp
 │   │   ├── pearlearring.jpg
+│   │   ├── preview.png
 │   │   ├── starrynight.jpg
 │   │   ├── thekiss.jpg
 │   │   ├── theswing.jpeg
@@ -69,6 +70,9 @@ npm run dev
 │   │   └── room.js
 │   └── style.css
 └── vite.config.js
+
+8 directories, 26 files
+
 
 ```
 
