@@ -72,8 +72,6 @@ npm run dev
 └── vite.config.js
 
 8 directories, 26 files
-
-
 ```
 
 ### Controls
