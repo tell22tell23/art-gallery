@@ -1,14 +1,19 @@
 // room.js
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { NavigationController } from '../controller/navigation-controller';
 
+import { RenderPass, EffectComposer, OutputPass, UnrealBloomPass, ShaderPass } from 'three/examples/jsm/Addons.js';
+
 RectAreaLightUniformsLib.init();
+
+const params = {
+    threshold: 0,
+    strength: 0.5,
+    radius: 0.6,
+    exposure: 1.2
+};
 
 function addLightSource(glowObject, scene) {
     const name = glowObject.name.toLowerCase();
@@ -52,7 +57,7 @@ function addLightSource(glowObject, scene) {
     }
 }
 
-export function addRoom(scene, camera, renderer) {
+export function addRoom(scene, camera, renderer, BLOOM_SCENE) {
     return new Promise((resolve, reject) => {
         const loader = new GLTFLoader();
 
@@ -62,10 +67,40 @@ export function addRoom(scene, camera, renderer) {
         const ambientLight = new THREE.AmbientLight(0xffffff, 1);
         scene.add(ambientLight);
 
-        const composer = new EffectComposer(renderer);
-        composer.addPass(new RenderPass(scene, camera));
-        composer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.3, 0.4, 0.85));
-        composer.addPass(new OutputPass());
+        const renderScene = new RenderPass(scene, camera);
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            1.5, // bloom strength
+            0.4,
+            0.85
+        );
+        bloomPass.threshold = params.threshold;
+        bloomPass.strength = params.strength;
+        bloomPass.radius = params.radius;
+
+        const bloomComposer = new EffectComposer(renderer);
+        bloomComposer.renderToScreen = false;
+        bloomComposer.addPass(renderScene);
+        bloomComposer.addPass(bloomPass);
+
+        const mixPass = new ShaderPass(
+            new THREE.ShaderMaterial({
+                uniforms: {
+                    baseTexture: { value: null },
+                    bloomTexture: { value: bloomComposer.renderTarget2.texture }
+                },
+                vertexShader: document.getElementById('vertexshader').textContent,
+                fragmentShader: document.getElementById('fragmentshader').textContent,
+                defines: {}
+            }), 'baseTexture'
+        );
+        mixPass.needsSwap = true;
+
+        const finalComposer = new EffectComposer(renderer);
+        finalComposer.addPass(renderScene);
+        finalComposer.addPass(mixPass);
+
+        finalComposer.addPass(new OutputPass());
 
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2();
@@ -167,13 +202,14 @@ export function addRoom(scene, camera, renderer) {
                         } else if (child.isMesh) {
                             child.material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.8 });
                         }
+                        child.layers.enable(BLOOM_SCENE);
                         addLightSource(child, scene);
                     }
                 });
 
                 scene.add(model);
                 const navigationController = new NavigationController(camera, scene);
-                navigationController.setPosition(1, 0, 5);
+                navigationController.setPosition(1, 0, 3);
 
                 if (gltf.scene.background) {
                     scene.background = gltf.scene.background;
@@ -214,7 +250,7 @@ export function addRoom(scene, camera, renderer) {
                     }
                 };
 
-                resolve({ composer, updateHelpers, navigationController, detectArtHover });
+                resolve({ bloomComposer, finalComposer, updateHelpers, navigationController, detectArtHover });
             },
             (progress) => {
                 if (progress.lengthComputable) {

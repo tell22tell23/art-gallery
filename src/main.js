@@ -6,12 +6,33 @@ import { addRoom } from './objects/room';
 
 const clock = new THREE.Clock();
 
-let composer, navigationController, updateHelpers, detectArtHover = null;
+let bloomComposer, finalComposer, navigationController, updateHelpers, detectArtHover = null;
+
+const BLOOM_SCENE = 1;
+const bloomLayer = new THREE.Layers();
+bloomLayer.set(BLOOM_SCENE);
+const darkMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+const materials = {}
+
+function nonBloomed(obj) {
+    if(obj.isMesh && bloomLayer.test(obj.layers) === false) {
+        materials[obj.uuid] = obj.material;
+        obj.material = darkMaterial;
+    }
+}
+
+function restoreMaterials(obj) {
+    if(materials[obj.uuid]) {
+        obj.material = materials[obj.uuid];
+        delete materials[obj.uuid];
+    }
+}
 
 function init() {
-    addRoom(scene, camera, renderer)
-        .then(({ composer: c, updateHelpers: uh, navigationController: nc, detectArtHover: dh }) => {
-            composer = c;
+    addRoom(scene, camera, renderer, BLOOM_SCENE)
+        .then(({ bloomComposer: bc, finalComposer: fc, updateHelpers: uh, navigationController: nc, detectArtHover: dh }) => {
+            bloomComposer = bc;
+            finalComposer = fc;
             updateHelpers = uh;
             navigationController = nc;
             detectArtHover = dh;
@@ -31,8 +52,10 @@ function init() {
                 if (updateHelpers) { updateHelpers(); }
                 if (detectArtHover) { detectArtHover(); }
 
-                if (composer) { composer.render(); }
-                else { renderer.render(scene, camera); }
+                scene.traverse(nonBloomed);
+                bloomComposer.render();
+                scene.traverse(restoreMaterials);
+                finalComposer.render();
             }
 
             animate(); // Start the animation loop here
@@ -46,9 +69,8 @@ function init() {
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
 
-        if (composer) {
-            composer.setSize(window.innerWidth, window.innerHeight);
-        }
+        bloomComposer.setSize(window.innerWidth, window.innerHeight);
+        finalComposer.setSize(window.innerWidth, window.innerHeight);
     });
 }
 
