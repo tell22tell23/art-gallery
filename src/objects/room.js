@@ -21,7 +21,7 @@ function addLightSource(glowObject, scene) {
     glowObject.getWorldPosition(worldPosition);
 
     if (name.includes('spot')) {
-        const spotLight = new THREE.SpotLight(0xffffff, 10, 50, Math.PI / 6, 0.3, 2);
+        const spotLight = new THREE.SpotLight(0xffffff, 20, 50, Math.PI / 6, 0.3, 2);
         spotLight.position.copy(worldPosition);
 
         const target = new THREE.Object3D();
@@ -46,7 +46,7 @@ function addLightSource(glowObject, scene) {
 
         scene.add(spotLight);
     } else if (name.includes('ceiling')) {
-        const rectLight = new THREE.RectAreaLight(0xffffff, 50, 1.0, 1.0);
+        const rectLight = new THREE.RectAreaLight(0xffffff, 80, 1.0, 1.0);
         rectLight.position.copy(worldPosition);
         rectLight.rotation.x = -Math.PI / 2;
         scene.add(rectLight);
@@ -180,7 +180,8 @@ export function addRoom(scene, camera, renderer, BLOOM_SCENE) {
         }
 
         loader.load(
-            '/gal.glb',
+            '/stuff.glb',
+            // '/gal.glb',
             // '3d-art-gallery.glb',
             (gltf) => {
                 document.getElementById('loadingScreen').style.display = 'none'; // Hide loading screen
