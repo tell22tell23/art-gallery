@@ -190,6 +190,17 @@ export function addRoom(scene, camera, renderer, BLOOM_SCENE) {
                         child.castShadow = true;
                         child.receiveShadow = true;
                     }
+                    if (child.name &&
+                        (child.name.startsWith('Wall') ||
+                         child.name.startsWith('Floor') ||
+                         child.name.startsWith('Ceiling'))) {
+                        console.log("here", child.name);
+                        if (child.material) {
+                            child.material.roughness = 0.8;
+                            child.material.metalness = 0.6;
+                            child.material.clearcoat = 0.3;
+                        }
+                    }
                     if (child.name && child.name.startsWith('glow_light')) {
                         if (child.material) {
                             child.material = child.material.clone();
