@@ -180,9 +180,8 @@ export function addRoom(scene, camera, renderer, BLOOM_SCENE) {
         }
 
         loader.load(
-            '/stuff.glb',
+            '/stuff1.glb',
             // '/gal.glb',
-            // '3d-art-gallery.glb',
             (gltf) => {
                 document.getElementById('loadingScreen').style.display = 'none'; // Hide loading screen
                 const model = gltf.scene;
@@ -190,17 +189,6 @@ export function addRoom(scene, camera, renderer, BLOOM_SCENE) {
                     if (child.isMesh) {
                         child.castShadow = true;
                         child.receiveShadow = true;
-                    }
-                    if (child.name &&
-                        (child.name.startsWith('Wall') ||
-                         child.name.startsWith('Floor') ||
-                         child.name.startsWith('Ceiling'))) {
-                        console.log("here", child.name);
-                        if (child.material) {
-                            child.material.roughness = 0.8;
-                            child.material.metalness = 0.6;
-                            child.material.clearcoat = 0.3;
-                        }
                     }
                     if (child.name && child.name.startsWith('glow_light')) {
                         if (child.material) {
