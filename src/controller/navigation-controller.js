@@ -1,4 +1,3 @@
-// NavigationController.js
 import * as THREE from 'three';
 
 export class NavigationController {
@@ -8,6 +7,7 @@ export class NavigationController {
 
         this.moveSpeed = 7.0;
         this.lookSpeed = 0.003;
+        this.lookSpeedKeyboard = 0.1;
         this.jumpHeight = 1.5;
         this.gravity = -9.8;
         this.playerHeight = 5;
@@ -152,6 +152,11 @@ export class NavigationController {
             this.yaw -= this.mouseMovement.x * this.lookSpeed;
             this.pitch -= this.mouseMovement.y * this.lookSpeed;
             this.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.pitch));
+
+            if (this.keys['KeyK']) this.yaw += this.lookSpeedKeyboard; // Look right
+            if (this.keys['Semicolon']) this.yaw -= this.lookSpeedKeyboard; // Look left
+            if (this.keys['KeyO']) this.pitch += this.lookSpeedKeyboard; // Look up
+            if (this.keys['KeyL']) this.pitch -= this.lookSpeedKeyboard; // Look down
 
             this.camera.rotation.y = this.yaw;
             this.camera.rotation.x = this.pitch;
