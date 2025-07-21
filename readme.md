@@ -79,6 +79,7 @@ npm run dev
 | ----------------- | -------------------------- |
 | Move              | `W`, `A`, `S`, `D`         |
 | Look around       | Mouse drag (click to lock) |
+|                   | `K`, `L`, `;`, `O`         |
 | Jump              | `Space`                    |
 | Interact with art | `E` while hovering         |
 | Close popup       | `Escape` or click outside  |
