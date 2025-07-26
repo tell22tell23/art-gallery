@@ -1,25 +1,43 @@
 import * as THREE from 'three';
 
-export function addLights(scene) {
-    // Lighting setup
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-    scene.add(ambientLight);
+export function addLightSource(glowObject, scene) {
+    const name = glowObject.name.toLowerCase();
+    const worldPosition = new THREE.Vector3();
+    glowObject.getWorldPosition(worldPosition);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(10, 10, 5);
-    directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = 2048;
-    directionalLight.shadow.mapSize.height = 2048;
-    directionalLight.shadow.camera.near = 0.5;
-    directionalLight.shadow.camera.far = 50;
-    directionalLight.shadow.camera.left = -10;
-    directionalLight.shadow.camera.right = 10;
-    directionalLight.shadow.camera.top = 10;
-    directionalLight.shadow.camera.bottom = -10;
-    scene.add(directionalLight);
+    if (name.includes('spot')) {
+        const spotLight = new THREE.SpotLight(0xffffff, 20, 50, Math.PI / 6, 0.3, 2);
+        spotLight.position.copy(worldPosition);
 
-    // Helper to visualize directional light
-    const directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 1);
-    scene.add(directionalLightHelper);
+        const target = new THREE.Object3D();
+        let targetOffset = { x: 0, y: -5, z: 0 };
+
+        if (name.includes('front')) targetOffset = { x: 0, y: -6, z: -5 };
+        else if (name.includes('back')) targetOffset = { x: 0, y: -6, z: 5 };
+        else if (name.includes('left')) targetOffset = { x: 5, y: -6, z: 0 };
+        else if (name.includes('right')) targetOffset = { x: -5, y: -3, z: 0 };
+
+        target.position.set(
+            worldPosition.x + targetOffset.x,
+            worldPosition.y + targetOffset.y,
+            worldPosition.z + targetOffset.z
+        );
+        scene.add(target);
+        spotLight.target = target;
+
+        spotLight.castShadow = true;
+        spotLight.shadow.mapSize.set(1024, 1024);
+        spotLight.shadow.bias = -0.005;
+
+        scene.add(spotLight);
+    } else if (name.includes('ceiling')) {
+        const rectLight = new THREE.RectAreaLight(0xffffff, 80, 1.0, 1.0);
+        rectLight.position.copy(worldPosition);
+        rectLight.rotation.x = -Math.PI / 2;
+        scene.add(rectLight);
+    } else {
+        const fallbackLight = new THREE.PointLight(0xffffff, 1, 20);
+        fallbackLight.position.copy(worldPosition);
+        scene.add(fallbackLight);
+    }
 }
-

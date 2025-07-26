@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib.js';
 import { NavigationController } from '../controller/navigation-controller';
+import { addLightSource } from '../core/lighting';
+
+import { grayscalePass, sepiaPass } from '../core/effects';
 
 import { RenderPass, EffectComposer, OutputPass, UnrealBloomPass, ShaderPass } from 'three/examples/jsm/Addons.js';
 
@@ -13,48 +16,6 @@ const params = {
     radius: 0.6,
     exposure: 1.2
 };
-
-function addLightSource(glowObject, scene) {
-    const name = glowObject.name.toLowerCase();
-    const worldPosition = new THREE.Vector3();
-    glowObject.getWorldPosition(worldPosition);
-
-    if (name.includes('spot')) {
-        const spotLight = new THREE.SpotLight(0xffffff, 20, 50, Math.PI / 6, 0.3, 2);
-        spotLight.position.copy(worldPosition);
-
-        const target = new THREE.Object3D();
-        let targetOffset = { x: 0, y: -5, z: 0 };
-
-        if (name.includes('front')) targetOffset = { x: 0, y: -6, z: -5 };
-        else if (name.includes('back')) targetOffset = { x: 0, y: -6, z: 5 };
-        else if (name.includes('left')) targetOffset = { x: 5, y: -6, z: 0 };
-        else if (name.includes('right')) targetOffset = { x: -5, y: -3, z: 0 };
-
-        target.position.set(
-            worldPosition.x + targetOffset.x,
-            worldPosition.y + targetOffset.y,
-            worldPosition.z + targetOffset.z
-        );
-        scene.add(target);
-        spotLight.target = target;
-
-        spotLight.castShadow = true;
-        spotLight.shadow.mapSize.set(1024, 1024);
-        spotLight.shadow.bias = -0.005;
-
-        scene.add(spotLight);
-    } else if (name.includes('ceiling')) {
-        const rectLight = new THREE.RectAreaLight(0xffffff, 80, 1.0, 1.0);
-        rectLight.position.copy(worldPosition);
-        rectLight.rotation.x = -Math.PI / 2;
-        scene.add(rectLight);
-    } else {
-        const fallbackLight = new THREE.PointLight(0xffffff, 1, 20);
-        fallbackLight.position.copy(worldPosition);
-        scene.add(fallbackLight);
-    }
-}
 
 export function addRoom(scene, camera, renderer, BLOOM_SCENE) {
     return new Promise((resolve, reject) => {
@@ -97,6 +58,8 @@ export function addRoom(scene, camera, renderer, BLOOM_SCENE) {
 
         const finalComposer = new EffectComposer(renderer);
         finalComposer.addPass(renderScene);
+        finalComposer.addPass(grayscalePass);
+        finalComposer.addPass(sepiaPass);
         finalComposer.addPass(mixPass);
 
         finalComposer.addPass(new OutputPass());
@@ -117,14 +80,29 @@ export function addRoom(scene, camera, renderer, BLOOM_SCENE) {
         });
 
         window.addEventListener('keydown', (event) => {
-            if (event.code === 'KeyE' && hoveredArt && artDetails[hoveredArt]) {
-                const art = artDetails[hoveredArt];
-                showArtDetailPopup(art);
-                document.exitPointerLock();
-            }
-
-            if (event.code === 'Escape') {
-                closePopup();
+            switch (event.code) {
+                case 'Digit0':
+                    grayscalePass.enabled = false;
+                    sepiaPass.enabled = false;
+                    break;
+                case 'Digit1':
+                    grayscalePass.enabled = true;
+                    sepiaPass.enabled = false;
+                    break;
+                case 'Digit2':
+                    grayscalePass.enabled = false;
+                    sepiaPass.enabled = true;
+                    break;
+                case 'KeyE':
+                    if (hoveredArt && artDetails[hoveredArt]) {
+                        const art = artDetails[hoveredArt];
+                        showArtDetailPopup(art);
+                        document.exitPointerLock();
+                    }
+                    break;
+                case 'Escape':
+                    closePopup();
+                    break;
             }
         });
 
@@ -212,12 +190,6 @@ export function addRoom(scene, camera, renderer, BLOOM_SCENE) {
 
                 if (gltf.scene.background) {
                     scene.background = gltf.scene.background;
-                }
-
-                // Optional: Use environment map
-                const envMap = gltf.scene.environment;
-                if (envMap) {
-                    scene.environment = envMap;
                 }
 
                 const updateHelpers = () => {
