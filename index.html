@@ -13,6 +13,46 @@
                 <p>Press <strong>E</strong> to learn more about this art</p>
             </div>
 
+            <!-- Mode display (top-center) -->
+            <div id="modeDisplay" style="
+                position: fixed;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                color: white;
+                background: rgba(0,0,0,0.6);
+                padding: 6px 14px;
+                border-radius: 5px;
+                font-family: Arial, sans-serif;
+                font-size: 16px;
+                z-index: 1000;
+                ">
+                Mode: Normal
+            </div>
+
+            <!-- Controls help (top-right) -->
+            <div id="instructions" style="
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                color: white;
+                background: rgba(0,0,0,0.6);
+                padding: 10px 14px;
+                border-radius: 5px;
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+                z-index: 1000;
+                ">
+                <strong>Visual Modes:</strong><br>
+                • 0 - Normal<br>
+                • 1 - Black & White<br>
+                • 2 - Sepia<br>
+                • 3 - Night Mode<br><br>
+                <strong>Art:</strong><br>
+                • Hover & press E to inspect<br>
+                • ESC to close popup
+            </div>
+
             <!-- Art detail popup -->
             <div id="artDetailPopup" style="display: none;">
                 <div id="popupContent">

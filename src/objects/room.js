@@ -18,13 +18,18 @@ const params = {
 };
 
 export function addRoom(scene, camera, renderer, BLOOM_SCENE) {
+    let nightMode = false;
+    let ambientLight;
+    let allLightSources = [];
+
+    const modeDisplay = document.getElementById('modeDisplay');
     return new Promise((resolve, reject) => {
         const loader = new GLTFLoader();
 
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+        ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
         scene.add(ambientLight);
 
         const renderScene = new RenderPass(scene, camera);
@@ -82,16 +87,32 @@ export function addRoom(scene, camera, renderer, BLOOM_SCENE) {
         window.addEventListener('keydown', (event) => {
             switch (event.code) {
                 case 'Digit0':
+                    // Normal
                     grayscalePass.enabled = false;
                     sepiaPass.enabled = false;
+                    nightMode = false;
+                    modeDisplay.textContent = 'Mode: Normal';
                     break;
                 case 'Digit1':
+                    // Black and White
                     grayscalePass.enabled = true;
                     sepiaPass.enabled = false;
+                    nightMode = false;
+                    modeDisplay.textContent = 'Mode: Black & White';
                     break;
                 case 'Digit2':
+                    // Sepia
                     grayscalePass.enabled = false;
                     sepiaPass.enabled = true;
+                    nightMode = false;
+                    modeDisplay.textContent = 'Mode: Sepia';
+                    break;
+                case 'Digit3':
+                    // Night Mode
+                    grayscalePass.enabled = false;
+                    sepiaPass.enabled = false;
+                    nightMode = !nightMode;
+                    modeDisplay.textContent = 'Mode: Night Mode';
                     break;
                 case 'KeyE':
                     if (hoveredArt && artDetails[hoveredArt]) {
@@ -104,6 +125,20 @@ export function addRoom(scene, camera, renderer, BLOOM_SCENE) {
                     closePopup();
                     break;
             }
+
+            ambientLight.intensity = nightMode ? 0.01 : 0.3;
+
+            allLightSources.forEach(light => {
+                if (light.type === 'SpotLight') {
+                    light.intensity = nightMode ? 5 : 20;
+                } else if (light.type === 'RectAreaLight') {
+                    light.intensity = nightMode ? 20 : 80;
+                }
+            });
+
+            bloomPass.strength = nightMode ? 0.2 : params.strength;
+            bloomPass.threshold = nightMode ? 0.4 : params.threshold;
+            bloomPass.radius = nightMode ? 0.2 : params.radius;
         });
 
         window.addEventListener('mousedown', (event) => {
@@ -180,7 +215,7 @@ export function addRoom(scene, camera, renderer, BLOOM_SCENE) {
                             child.material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.8 });
                         }
                         child.layers.enable(BLOOM_SCENE);
-                        addLightSource(child, scene);
+                        addLightSource(child, scene, allLightSources);
                     }
                 });
 
